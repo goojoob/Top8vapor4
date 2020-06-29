@@ -13,6 +13,9 @@ final class Community: Model, Content, Validatable {
 	@Children(for: \.$community)
 	var players: [Player]
 
+	@Children(for: \.$community)
+	var tournaments: [Tournament]
+
 	init() {}
 
 	init(id: UUID? = nil, name: String) {
@@ -21,6 +24,6 @@ final class Community: Model, Content, Validatable {
 	}
 
 	static func validations(_ validations: inout Validations) {
-        validations.add("name", as: String.self, is: !.empty && .count(3...) && .alphanumeric)
+        validations.add("name", as: String.self, is: !.empty && .count(3...))
     }
 }

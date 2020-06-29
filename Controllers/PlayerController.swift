@@ -23,7 +23,7 @@ struct PlayerController: RouteCollection {
 		return Player.query(on: req.db)
 			.filter(\.$id == paramID)
 			.first()
-			.unwrap(or: Abort(.notFound))
+			.unwrap(or: Top8Error.playerNotFound)
 	}
 
 	func getAllPlayers(req: Request) throws -> EventLoopFuture<[Player]> {

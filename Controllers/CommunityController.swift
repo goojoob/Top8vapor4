@@ -24,7 +24,7 @@ struct CommunityController: RouteCollection {
 			.filter(\.$id == paramID)
 			.with(\.$players)
 			.first()
-			.unwrap(or: Abort(.notFound))
+			.unwrap(or: Top8Error.communityNotFound)
 	}
 
 	func getAllCommunities(req: Request) throws -> EventLoopFuture<[Community]> {
