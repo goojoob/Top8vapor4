@@ -11,6 +11,8 @@ struct PlayerController: RouteCollection {
 		playerRoutes.get("getAllWith", use: getAllPlayersWith)
 		
 		playerRoutes.post("create", use: createPlayer)
+
+		playerRoutes.get("getTournaments", ":paramID", use: getTournaments)
 	}
 
 
@@ -86,13 +88,25 @@ struct PlayerController: RouteCollection {
     static func existsPlayer(req: Request, playerId: UUID) throws -> EventLoopFuture<Player> {
         return Player
             .find(playerId, on: req.db)
-            .flatMap { playerExistence in
-                if let player = playerExistence {
-                    return req.eventLoop.makeSucceededFuture(player)
-                } else {
-                    return req.eventLoop.makeFailedFuture(Top8Error.playerNotFound)
-                }
-        }
+			.unwrap(or: Top8Error.playerNotFound)
     }
+
+
+
+    func getTournaments(req: Request) throws -> EventLoopFuture<[Tournament]> {
+		guard let paramID = req.parameters.get("paramID", as: UUID.self) else {
+        	throw Abort(.badRequest)
+    	}
+
+		return Player.query(on: req.db)
+			.filter(\.$id == paramID)
+			.first()
+			.unwrap(or: Top8Error.playerNotFound)
+            .flatMap { player in
+                return player.$tournaments
+                    .get(on: req.db)
+            }
+
+	}
 
 }

@@ -105,9 +105,11 @@ struct TournamentController: RouteCollection {
 
         return try existsTournament(req: req, tournamentId: paramPlayerTournament.tournamentId)
             .flatMap { tournament in 
+                do {
                     return try PlayerController
                         .existsPlayer(req: req, playerId: paramPlayerTournament.playerId)
                         .flatMap { player in 
+
                             return tournament.$players.isAttached(to: player, on:req.db)
                                 .flatMap { playerExistsInTournament in
                                     if playerExistsInTournament {
@@ -118,20 +120,18 @@ struct TournamentController: RouteCollection {
                                             .transform(to: HTTPStatus.ok)
                                     }
                             }
+
                         }
+                } catch {
+                    return req.eventLoop.makeFailedFuture(Top8Error.playerNotFound)
+                }
             }
     }
 
     func existsTournament(req: Request, tournamentId: UUID) throws -> EventLoopFuture<Tournament> {
         return Tournament
             .find(tournamentId, on: req.db)
-            .flatMap { tournamentExistence in
-                if let tournament = tournamentExistence {
-                    return req.eventLoop.makeSucceededFuture(tournament)
-                } else {
-                    return req.eventLoop.makeFailedFuture(Top8Error.tournamentNotFound)
-                }
-        }
+            .unwrap(or: Top8Error.tournamentNotFound)
     }
 
 
