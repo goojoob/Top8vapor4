@@ -11,6 +11,7 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateCommunity())
     app.migrations.add(CreatePlayer())
     app.migrations.add(CreateTournament())
+    app.migrations.add(CreatePlayerTournament())
 
     // register routes
     try routes(app)

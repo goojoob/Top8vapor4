@@ -82,4 +82,17 @@ struct PlayerController: RouteCollection {
 	}
 
 
+
+    static func existsPlayer(req: Request, playerId: UUID) throws -> EventLoopFuture<Player> {
+        return Player
+            .find(playerId, on: req.db)
+            .flatMap { playerExistence in
+                if let player = playerExistence {
+                    return req.eventLoop.makeSucceededFuture(player)
+                } else {
+                    return req.eventLoop.makeFailedFuture(Top8Error.playerNotFound)
+                }
+        }
+    }
+
 }

@@ -45,10 +45,32 @@ struct CommunityController: RouteCollection {
 		req.logger.info("Validating Community JSON")
 		try Community.validate(req)
 
-		req.logger.info("Creating Community in Database")
 		let community: Community = try req.content.decode(Community.self)
-		return community.create(on: req.db)
-			.map { community }
+		community.name = community.name.uppercased()
+
+		return try existsCommunity(req: req, community: community).flatMap { existsCommunity in
+			if existsCommunity {
+				return req.eventLoop.makeFailedFuture(Top8Error.communityExists(community.name))
+			} else {
+				req.logger.info("Creating Community in Database")
+				return community.create(on: req.db)
+					.map { community }
+			}
+		}
+
+	}
+
+	func existsCommunity(req: Request, community: Community) throws -> EventLoopFuture<Bool> {
+		Community.query(on: req.db)
+			.filter(\.$name == community.name.uppercased())
+			.count()
+			.flatMap { numCommunities in
+				if (numCommunities == 0) {
+					return req.eventLoop.makeSucceededFuture(false)
+				} else {
+					return req.eventLoop.makeSucceededFuture(true)
+				}
+			}
 	}
 
 }

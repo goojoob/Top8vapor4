@@ -5,6 +5,8 @@ struct CreateCommunity: Migration {
         return database.schema("community")
             .id()
             .field("name", .string, .required)
+            .field("created_at", .datetime)
+            .field("updated_at", .datetime)
             .create()
     }
 

@@ -4,7 +4,9 @@ enum Top8Error {
     case communityNotFound
     case tournamentNotFound
     case playerNotFound
+    case communityExists(String)
     case playerExistsCommunity(String)
+    case playerExistsTournament(String, String)
     case tournamentExistsCommunity(String)
 }
 
@@ -17,8 +19,12 @@ extension Top8Error: AbortError {
                 return "Tournament not found"
             case .playerNotFound:
                 return "Player not found"
+            case .communityExists(let name):
+                return "The community \(name) already exists"                
             case .playerExistsCommunity(let name):
                 return "The player \(name) already exists in the community"
+            case .playerExistsTournament(let namePlayer, let nameTournament):
+                return "The player \(namePlayer) already exists in the tournament \(nameTournament)"                
             case .tournamentExistsCommunity(let name):
                 return "The tournament \(name) already exists in the community"
         }
@@ -31,9 +37,13 @@ extension Top8Error: AbortError {
             case .tournamentNotFound:
                 return .notFound
             case .playerNotFound:
-                return .notFound                                
+                return .notFound             
+            case .communityExists:
+                return .badRequest                                   
             case .playerExistsCommunity:
                 return .badRequest
+            case .playerExistsTournament:
+                return .badRequest                
             case .tournamentExistsCommunity:
                 return .badRequest
         }

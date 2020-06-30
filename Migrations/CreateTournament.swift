@@ -5,7 +5,9 @@ struct CreateTournament: Migration {
         return database.schema("tournament")
             .id()
             .field("name", .string, .required)
-            .field("community_id", .uuid, .references("community","id"))
+            .field("community_id", .uuid, .required, .references("community","id"))
+            .field("created_at", .datetime)
+            .field("updated_at", .datetime)
             .create()
     }
 
