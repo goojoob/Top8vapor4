@@ -6,7 +6,7 @@ struct CommunityController: RouteCollection {
 	func boot (routes: RoutesBuilder) throws {
 		let communityRoutes = routes.grouped("api", "community")
 
-		communityRoutes.get("get", ":paramID", use: getCommunity)
+		communityRoutes.get("get", ":paramID", use: getCommunityParam)
 		communityRoutes.get("getAll", use: getAllCommunities)
 		communityRoutes.get("getAllWith", use: getAllCommunitiesWith)
 
@@ -15,7 +15,7 @@ struct CommunityController: RouteCollection {
 
 
 
-	func getCommunity(req: Request) throws -> EventLoopFuture<Community> {
+	func getCommunityParam(req: Request) throws -> EventLoopFuture<Community> {
 		guard let paramID = req.parameters.get("paramID", as: UUID.self) else {
         	throw Abort(.badRequest)
     	}
@@ -24,6 +24,11 @@ struct CommunityController: RouteCollection {
 			.filter(\.$id == paramID)
 			.with(\.$players)
 			.first()
+			.unwrap(or: Top8Error.communityNotFound)
+	}
+
+	static func getCommunity(req: Request, communityId: UUID) throws -> EventLoopFuture<Community> {
+        return Community.find(communityId, on: req.db)
 			.unwrap(or: Top8Error.communityNotFound)
 	}
 

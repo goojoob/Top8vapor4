@@ -30,6 +30,12 @@ struct TournamentController: RouteCollection {
 			.unwrap(or: Top8Error.tournamentNotFound)
 	}
 
+    static func getTournament(req: Request, tournamentId: UUID) throws -> EventLoopFuture<Tournament> {
+        return Tournament
+            .find(tournamentId, on: req.db)
+            .unwrap(or: Top8Error.tournamentNotFound)
+    }
+
     func getTournamentWith(req: Request) throws -> EventLoopFuture<Tournament> {
 		guard let paramID = req.parameters.get("paramID", as: UUID.self) else {
         	throw Abort(.badRequest)
@@ -78,11 +84,9 @@ struct TournamentController: RouteCollection {
 	}
 
     func existsTournamentInCommunity(req: Request, tourn: Tournament) throws -> EventLoopFuture<Bool> {
-        return Community.query(on: req.db)
-            .filter(\.$id == tourn.$community.id)
-            .first()
-            .unwrap(or: Top8Error.communityNotFound)
-            .flatMap { community in
+		return try CommunityController
+			.getCommunity(req: req, communityId: tourn.$community.id)
+			.flatMap { community in
 
                 return community.$tournaments.query(on: req.db)
                     .filter(\Tournament.$name == tourn.name.uppercased())
@@ -103,11 +107,12 @@ struct TournamentController: RouteCollection {
     func addPlayer(req: Request) throws -> EventLoopFuture<HTTPResponseStatus> {
         let paramPlayerTournament: ParamPlayerTournament = try req.content.decode(ParamPlayerTournament.self)
 
-        return try existsTournament(req: req, tournamentId: paramPlayerTournament.tournamentId)
-            .flatMap { tournament in 
+        return try TournamentController
+            .getTournament(req: req, tournamentId: paramPlayerTournament.tournamentId)
+            .flatMap { tournament in
                 do {
                     return try PlayerController
-                        .existsPlayer(req: req, playerId: paramPlayerTournament.playerId)
+                        .getPlayer(req: req, playerId: paramPlayerTournament.playerId)
                         .flatMap { player in 
 
                             return tournament.$players.isAttached(to: player, on:req.db)
@@ -126,12 +131,6 @@ struct TournamentController: RouteCollection {
                     return req.eventLoop.makeFailedFuture(Top8Error.playerNotFound)
                 }
             }
-    }
-
-    func existsTournament(req: Request, tournamentId: UUID) throws -> EventLoopFuture<Tournament> {
-        return Tournament
-            .find(tournamentId, on: req.db)
-            .unwrap(or: Top8Error.tournamentNotFound)
     }
 
 

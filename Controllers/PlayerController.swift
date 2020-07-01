@@ -6,7 +6,7 @@ struct PlayerController: RouteCollection {
 	func boot (routes: RoutesBuilder) throws {
 		let playerRoutes = routes.grouped("api", "player")
 
-		playerRoutes.get("get", ":paramID", use: getPlayer)
+		playerRoutes.get("get", ":paramID", use: getPlayerParam)
 		playerRoutes.get("getAll", use: getAllPlayers)
 		playerRoutes.get("getAllWith", use: getAllPlayersWith)
 		
@@ -17,7 +17,7 @@ struct PlayerController: RouteCollection {
 
 
 
-	func getPlayer(req: Request) throws -> EventLoopFuture<Player> {
+	func getPlayerParam(req: Request) throws -> EventLoopFuture<Player> {
 		guard let paramID = req.parameters.get("paramID", as: UUID.self) else {
         	throw Abort(.badRequest)
     	}
@@ -25,6 +25,11 @@ struct PlayerController: RouteCollection {
 		return Player.query(on: req.db)
 			.filter(\.$id == paramID)
 			.first()
+			.unwrap(or: Top8Error.playerNotFound)
+	}
+
+	static func getPlayer(req: Request, playerId: UUID) throws -> EventLoopFuture<Player> {
+        return Player.find(playerId, on: req.db)
 			.unwrap(or: Top8Error.playerNotFound)
 	}
 
@@ -63,10 +68,8 @@ struct PlayerController: RouteCollection {
 	}
 
 	func existsPlayerInCommunity(req: Request, player: Player) throws -> EventLoopFuture<Bool> {
-		return Community.query(on: req.db)
-			.filter(\.$id == player.$community.id)
-			.first()
-			.unwrap(or: Top8Error.communityNotFound)
+		return try CommunityController
+			.getCommunity(req: req, communityId: player.$community.id)
 			.flatMap { community in
 
 				return community.$players.query(on: req.db)
@@ -82,14 +85,6 @@ struct PlayerController: RouteCollection {
 
 			}
 	}
-
-
-
-    static func existsPlayer(req: Request, playerId: UUID) throws -> EventLoopFuture<Player> {
-        return Player
-            .find(playerId, on: req.db)
-			.unwrap(or: Top8Error.playerNotFound)
-    }
 
 
 
