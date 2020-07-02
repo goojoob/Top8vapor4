@@ -43,6 +43,7 @@ struct TournamentController: RouteCollection {
 
 		return Tournament.query(on: req.db)
             .with(\.$players)
+			.with(\.$rounds)
 			.filter(\.$id == paramID)
 			.first()
 			.unwrap(or: Top8Error.tournamentNotFound)

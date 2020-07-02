@@ -28,6 +28,6 @@ final class Round: Model, Content, Validatable {
 	}
 
 	static func validations(_ validations: inout Validations) {
-        validations.add("num_round", as: Int.self, is: .range(0...))
+        validations.add("numRound", as: Int.self, is: .range(0...))
     }
 }

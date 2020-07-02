@@ -101,7 +101,6 @@ struct PlayerController: RouteCollection {
                 return player.$tournaments
                     .get(on: req.db)
             }
-
 	}
 
 }
