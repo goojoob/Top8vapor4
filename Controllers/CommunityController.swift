@@ -23,6 +23,7 @@ struct CommunityController: RouteCollection {
 		return Community.query(on: req.db)
 			.filter(\.$id == paramID)
 			.with(\.$players)
+			.with(\.$tournaments)
 			.first()
 			.unwrap(or: Top8Error.communityNotFound)
 	}

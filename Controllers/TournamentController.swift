@@ -6,7 +6,7 @@ struct TournamentController: RouteCollection {
 	func boot (routes: RoutesBuilder) throws {
 		let tournamentRoutes = routes.grouped("api", "tournament")
 
-		tournamentRoutes.get("get", ":paramID", use: getTournament)
+		tournamentRoutes.get("get", ":paramID", use: getTournamentParam)
         tournamentRoutes.get("getWith", ":paramID", use: getTournamentWith)
 		tournamentRoutes.get("getAll", use: getAllTournaments)
 		tournamentRoutes.get("getAllWith", use: getAllTournamentsWith)
@@ -19,7 +19,7 @@ struct TournamentController: RouteCollection {
 
 
 
-    func getTournament(req: Request) throws -> EventLoopFuture<Tournament> {
+    func getTournamentParam(req: Request) throws -> EventLoopFuture<Tournament> {
 		guard let paramID = req.parameters.get("paramID", as: UUID.self) else {
         	throw Abort(.badRequest)
     	}
