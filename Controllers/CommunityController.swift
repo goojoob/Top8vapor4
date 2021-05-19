@@ -48,7 +48,7 @@ struct CommunityController: RouteCollection {
 
 	func createCommunity(req: Request) throws -> EventLoopFuture<Community> {
 		req.logger.info("Validating Community JSON")
-		try Community.validate(req)
+		try Community.validate(content: req)
 
 		let community: Community = try req.content.decode(Community.self)
 		community.name = community.name.uppercased()

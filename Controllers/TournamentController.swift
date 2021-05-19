@@ -66,7 +66,7 @@ struct TournamentController: RouteCollection {
 
 	func createTournament(req: Request) throws -> EventLoopFuture<Tournament> {
 		req.logger.info("Validating Tournament JSON")
-		try Tournament.validate(req)
+		try Tournament.validate(content: req)
 		
 		let tournament: Tournament = try req.content.decode(Tournament.self)
 		tournament.name = tournament.name.uppercased()

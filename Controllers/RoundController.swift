@@ -11,7 +11,7 @@ struct RoundController: RouteCollection {
 
 	func createRound(req: Request) throws -> EventLoopFuture<Round> {
 		req.logger.info("Validating Round JSON")
-		try Round.validate(req)
+		try Round.validate(content: req)
 		
 		let round: Round = try req.content.decode(Round.self)
 

@@ -49,7 +49,7 @@ struct PlayerController: RouteCollection {
 
 	func createPlayer(req: Request) throws -> EventLoopFuture<Player> {
 		req.logger.info("Validating Player JSON")
-		try Player.validate(req)
+		try Player.validate(content: req)
 		
 		let player: Player = try req.content.decode(Player.self)
 		player.name = player.name.uppercased()
