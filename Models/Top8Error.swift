@@ -21,8 +21,8 @@ extension Top8Error: AbortError {
                 return "Player not found"
             case .communityExists(let name):
                 return "The community \(name) already exists"                
-            case .playerExistsCommunity(let name):
-                return "The player \(name) already exists in the community"
+            case .playerExistsCommunity(let namePlayer):
+                return "The player \(namePlayer) already exists in the community"
             case .playerExistsTournament(let namePlayer, let nameTournament):
                 return "The player \(namePlayer) already exists in the tournament \(nameTournament)"                
             case .tournamentExistsCommunity(let name):

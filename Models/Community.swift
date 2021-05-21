@@ -2,7 +2,7 @@ import Fluent
 import Vapor
 
 final class Community: Model, Content, Validatable {
-	static let schema = "community"
+	static let schema = "communities"
 	
 	@ID(key: .id)
 	var id: UUID?

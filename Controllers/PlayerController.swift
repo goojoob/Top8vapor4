@@ -86,8 +86,6 @@ struct PlayerController: RouteCollection {
 			}
 	}
 
-
-
     func getTournaments(req: Request) throws -> EventLoopFuture<[Tournament]> {
 		guard let paramID = req.parameters.get("paramID", as: UUID.self) else {
         	throw Abort(.badRequest)

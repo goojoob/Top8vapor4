@@ -2,7 +2,7 @@ import Fluent
 import Vapor
 
 final class Tournament: Model, Content, Validatable {
-	static let schema = "tournament"
+	static let schema = "tournaments"
 	
 	@ID(key: .id)
 	var id: UUID?

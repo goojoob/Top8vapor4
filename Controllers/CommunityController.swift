@@ -41,6 +41,7 @@ struct CommunityController: RouteCollection {
 	func getAllCommunitiesWith(req: Request) throws -> EventLoopFuture<[Community]> {
 		return Community.query(on: req.db)
 			.with(\.$players)
+			.with(\.$tournaments)
 			.sort(\.$name)
 			.all()
 	}

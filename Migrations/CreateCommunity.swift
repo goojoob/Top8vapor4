@@ -2,7 +2,7 @@ import Fluent
 
 struct CreateCommunity: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        return database.schema("community")
+        return database.schema("communities")
             .id()
             .field("name", .string, .required)
             .field("created_at", .datetime)
@@ -11,6 +11,6 @@ struct CreateCommunity: Migration {
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        return database.schema("community").delete()
+        return database.schema("communities").delete()
     }
 }
