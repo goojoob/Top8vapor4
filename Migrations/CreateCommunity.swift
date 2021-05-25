@@ -7,6 +7,7 @@ struct CreateCommunity: Migration {
             .field("name", .string, .required)
             .field("created_at", .datetime)
             .field("updated_at", .datetime)
+            .unique(on: "name")
             .create()
     }
 

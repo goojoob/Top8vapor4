@@ -10,6 +10,8 @@ struct CommunityController: RouteCollection {
 		communityRoutes.get("getAll", use: getAllCommunities)
 		communityRoutes.get("getAllWith", use: getAllCommunitiesWith)
 
+		communityRoutes.get("view", ":paramID", use: viewCommunityParam)
+
 		communityRoutes.post("create", use: createCommunity)
 	}
 
@@ -48,6 +50,23 @@ struct CommunityController: RouteCollection {
 
 
 
+	func viewCommunityParam(req: Request) throws -> EventLoopFuture<View> {
+		guard let paramID = req.parameters.get("paramID", as: UUID.self) else {
+        	throw Abort(.badRequest)
+    	}
+
+		return Community.query(on: req.db)
+			.filter(\.$id == paramID)
+			.field(\.$name)
+			.first()
+			.unwrap(or: Top8Error.communityNotFound)
+			.flatMap { community in
+				return req.view.render("hello", ["name": community.name])
+			}
+	}
+
+
+	
 	func createCommunity(req: Request) throws -> EventLoopFuture<Community> {
 		req.logger.info("Validating Community JSON")
 		try Community.validate(content: req)
@@ -66,6 +85,7 @@ struct CommunityController: RouteCollection {
 		}
 
 	}
+	
 
 	func existsCommunity(req: Request, community: Community) throws -> EventLoopFuture<Bool> {
 		Community.query(on: req.db)

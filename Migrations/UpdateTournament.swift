@@ -2,7 +2,7 @@ import Fluent
 
 struct UpdateTournament: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        return database.schema("tournament")
+        return database.schema("tournaments")
             .field("num_rounds", .int8, .required)
             .field("current_round", .int8, .required)
             .field("started", .bool, .required)
@@ -10,6 +10,6 @@ struct UpdateTournament: Migration {
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        return database.schema("tournament").delete()
+        return database.schema("tournaments").delete()
     }
 }

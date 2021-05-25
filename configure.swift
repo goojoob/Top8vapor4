@@ -1,3 +1,4 @@
+import Leaf
 import Fluent
 import FluentSQLiteDriver
 import Vapor
@@ -30,6 +31,9 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateTournament())
     app.migrations.add(CreatePlayerTournament())
     app.migrations.add(CreateRound())
+
+    //This tells Vapor to use the LeafRenderer when you call req.view in your code
+    app.views.use(.leaf)
 
     // register routes
     try routes(app)

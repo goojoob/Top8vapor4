@@ -5,7 +5,7 @@ struct CreatePlayer: Migration {
         return database.schema("players")
             .id()
             .field("name", .string, .required)
-            .field("community_id", .uuid, .required, .references("community","id"))
+            .field("community_id", .uuid, .required, .references("communities","id"))
             .field("created_at", .datetime)
             .field("updated_at", .datetime)
             .create()
