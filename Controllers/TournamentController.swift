@@ -42,6 +42,7 @@ struct TournamentController: RouteCollection {
     	}
 
 		return Tournament.query(on: req.db)
+			.with(\.$community)
             .with(\.$players)
 			.with(\.$rounds)
 			.filter(\.$id == paramID)
@@ -58,6 +59,7 @@ struct TournamentController: RouteCollection {
 		return Tournament.query(on: req.db)
 			.with(\.$community)
             .with(\.$players)
+			.with(\.$rounds)
 			.sort(\.$name)
 			.all()
 	}
