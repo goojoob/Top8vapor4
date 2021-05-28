@@ -19,8 +19,12 @@ struct RoundController: RouteCollection {
             .getTournament(req: req, tournamentId: round.$tournament.id)
             .flatMap { tournament in
                 req.logger.info("Creating Round \(round.numRound) in Tournament")
-                return round.create(on: req.db)
-                    .map { round }
+				tournament.currentRound += 1
+				return tournament.update(on: req.db)
+					.flatMap { tournament in 
+					return round.create(on: req.db)
+						.map { round }
+				}
             }
 	}
 
